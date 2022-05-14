@@ -101,7 +101,7 @@ WEB.save("Family_Web.json", overwrite=True)
 # One of the Mandatory Arguments is the `line_colors_dict`
 # Each type of relationship you established using the relationship_idx
 # parameter in the `add_relationship` method of the Web instance you made,
-# they are the diffrent types of relatoinship.
+# they are the diffrent types of relationships.
 # In this example we had assigned relationshipes to indexes 1, 2, and 0.
 # Every relationship will be a line drawn in a certain color according to this
 # dictionary.
