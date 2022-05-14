@@ -9,7 +9,7 @@ Made with love using Python and Pygame.
 <br>
     
 ```python
-"""Examply Web displaying a Family Tree."""
+"""Example Web displaying a Family Tree."""
 # importing the module
 import pyweb
 from pyweb import Web, Member, display_web
