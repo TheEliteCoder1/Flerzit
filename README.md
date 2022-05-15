@@ -1,5 +1,4 @@
-# Flerzit
-<p align="center"><img src="https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/flerzit-icon.png"></p>
+![Flerzit]("https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/flerzit-icon.png")
 
 A Data Abstraction Program that allows you
 to represent Relationships between every member in an Web
