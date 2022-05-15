@@ -1,4 +1,4 @@
-<h1>Flerzit></h1>
+<h1>Flerzit</h1>
 <p align="center"><img src="https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/flerzit-icon.png"></p>
 
 A Data Abstraction Program that allows you
