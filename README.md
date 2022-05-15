@@ -8,6 +8,8 @@ using nothing but Code!
 Made with love using Python and Pygame.
 
 <h3>Check out example.py for more info!<h3>
+<img src="https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/states_of_matter.png">
+<br>
 <img src="https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/example.png">
 <br>
     
