@@ -1,4 +1,5 @@
 # Flerzit
+<p align="center"><img src="https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/flerzit-icon.png"></p>
 
 A Data Abstraction Program that allows you
 to represent Relationships between every member in an Web
@@ -7,14 +8,14 @@ using nothing but Code!
 Made with love using Python and Pygame.
 
 <h3>Check out example.py for more info!<h3>
-<img src="https://raw.githubusercontent.com/TheEliteCoder1/Pyweb/main/example.png">
+<img src="https://raw.githubusercontent.com/TheEliteCoder1/Flerzit/main/example.png">
 <br>
     
 ```python
 """Example Web displaying a Family Tree."""
 # importing the module
-import pyweb
-from pyweb import Web, Member, display_web
+import flerzit
+from flerzit import Web, Member, display_web
 
 # Creating a Web
 WEB = Web()
@@ -133,10 +134,10 @@ display_web(
     file_path="Family_Web.json", sw=660, sh=500,
     line_colors_dict=line_colors_dict, legend_dict=legend_dict,
     member_font_size=18, title_font_size=25, 
-    border_color=(244, 255, 255), border_width=3, border_radius=7, text_color=pyweb.BLACK, 
-    screen_color=(224, 255, 255), title_font_color=pyweb.BLACK, member_color=pyweb.WHITE, member_origin=65,
-    member_space_between_columns=3, member_horizontal_margin=160, legend_color=pyweb.WHITE, legend_font_size=20, 
-    legend_vertical_padding=2.2, legend_horizontal_padding=2.1, legend_margin_left=130, legend_border_color=pyweb.BLACK, legend_border_width=3,
+    border_color=(244, 255, 255), border_width=3, border_radius=7, text_color=flerzit.BLACK, 
+    screen_color=(224, 255, 255), title_font_color=flerzit.BLACK, member_color=flerzit.WHITE, member_origin=65,
+    member_space_between_columns=3, member_horizontal_margin=160, legend_color=flerzit.WHITE, legend_font_size=20, 
+    legend_vertical_padding=2.2, legend_horizontal_padding=2.1, legend_margin_left=130, legend_border_color=flerzit.BLACK, legend_border_width=3,
     legend_border_radius=7
 )
 ```

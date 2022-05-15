@@ -13,6 +13,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (10, 30, 255)
 
+
 class Member:
     """A member of a Web."""
     def __init__(self):
@@ -139,6 +140,7 @@ def display_web(file_path, sw, sh, line_colors_dict: dict, legend_dict: dict,
     screen_title = web.name
     screen = pygame.display.set_mode((sw, sh))
     pygame.display.set_caption(screen_title)
+    pygame.display.set_icon(pygame.image.load("flerzit-icon.png"))
     clock = pygame.time.Clock()
     fps = 60
     data_box_list = []
