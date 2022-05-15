@@ -126,7 +126,7 @@ legend_dict = {
 
 # There you go!
 # You've sucessfully put a WEB together.
-# Now Run the file in your current directory and see the output
+# Now, Run the file in your current directory and see the output
 # Enjoy your Web and don't forget that it is a JSON file so it may be portable 
 # to potential JavaScript Applications by parsing the file similiarly.
 
