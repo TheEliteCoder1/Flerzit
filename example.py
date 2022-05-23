@@ -1,11 +1,86 @@
 """Example Web displaying a Family Tree."""
 # importing the module
-import flerzit
-from flerzit import Web, Member, display_web
+import flerzit_sc
+from flerzit_sc import Web, Member, display_web
 
 # Creating a Web
-WEB = Web()
-WEB.name = "Family Web"
+# To initialize a web, we will need to pass in a few parameters.
+# Therse are the name, line_colors_dict, and legend_dict.
+
+name = "Family Web"
+
+# One of the Mandatory Arguments is the `line_colors_dict`
+# Each type of relationship you established using the relationship_idx
+# parameter in the `add_relationship` method of the Web instance you made,
+# they are the diffrent types of relatoinship.
+# In this example we had assigned relationshipes to indexes 1, 2, and 0.
+# Every relationship will be a line drawn in a certain color according to this
+# dictionary.
+
+line_colors_dict = {
+    0:(255,0,0),
+    1:(102, 255, 0),
+    2:(0,0,255)
+}
+
+# Likewise the mandatory `legend_dict` argument also has the same
+# behavior, except it manages labels in the legend of the WEB.
+
+legend_dict = {
+    0:"Spouse",
+    1:"Child",
+    2:"In-Law"
+}
+
+WEB = Web(name, line_colors_dict, legend_dict)
+
+# One attribute that is not a parameter, is the web's visualScript
+# attribute. This dictionary that is created from our intiialization is
+# a very customizeable API with defaults for every feature as soon 
+# as a new web is created. The visualScript of a web contains properties tha control
+# the look of the web in the Flerzit Data Visualizer.
+# For the sake of this tutorial, we are going 
+# to change the defaults, and place in this dictionary to
+# alter our web's visualScript.
+
+visualScript = {
+    "line_colors_dict":line_colors_dict,
+    "legend_dict":legend_dict,
+    "text_color":(0,0,0),
+    "member_horizontal_origin":80, 
+    "member_vertical_origin":90,
+    "member_font":"default_font.ttf",
+    "title_font":"default_font.ttf",
+    "legend_font":"default_font.ttf",
+    "legend_font_size":20,
+    "member_font_size":18,
+    "member_vertical_padding":2.2,
+    "member_horizontal_padding":1.3,
+    "member_vertical_margin":50,
+    "member_horizontal_margin":160,
+    "members_per_row":3,
+    "member_space_between_columns":3,
+    "member_color":(255,255,255),
+    "title_font_size":25,
+    "title_font_color":(0,0,0),
+    "background_color":(224,255,255),
+    "border":True,
+    "border_radius":7,
+    "legend_margin_top":60,
+    "legend_color":(255,255,255),
+    "legend_border_width":3,
+    "legend_border_radius":7,
+    "legend_border":True,
+    "border_width":3,
+    "border_color":(244, 255, 255),
+    "line_width":2,
+    "legend_margin_left":130,
+    "legend_border_color":(0,0,0),
+    "legend_vertical_padding":2.2,
+    "legend_horizontal_padding":2.1
+}
+
+WEB.visualScript = visualScript
 
 # Creating Members
 GreatGrandpa = Member()
@@ -82,50 +157,8 @@ WEB.add_relationship(Mom, Me, 1)
 # set the overwrite argument to True.
 WEB.save("Family_Web.json", overwrite=True)
 
-# Display the Output graphically in Python
-# A very customizeable API with defaults for everything 
-# in case you dont want
-# to mess with too many features :p
-
-# One of the Mandatory Arguments is the `line_colors_dict`
-# Each type of relationship you established using the relationship_idx
-# parameter in the `add_relationship` method of the Web instance you made,
-# they are the diffrent types of relatoinship.
-# In this example we had assigned relationshipes to indexes 1, 2, and 0.
-# Every relationship will be a line drawn in a certain color according to this
-# dictionary.
-
-line_colors_dict = {
-    0:(255,0,0),
-    1:(102, 255, 0),
-    2:(0,0,255)
-}
-
-# Likewise the mandatory `legend_dict` argument also has the same
-# behavior, except it manages labels in the legend of the WEB.
-
-legend_dict = {
-    0:"Spouse",
-    1:"Child",
-    2:"In-Law"
-}
-
-# There you go!
-# You've sucessfully put a WEB together.
-# Now Run the file in your current directory and see the output
-# Enjoy your Web and don't forget that it is a JSON file so it may be portable 
-# to potential JavaScript Applications by parsing the file similiarly.
-
-display_web(
-    file_path="Family_Web.json", sw=660, sh=500,
-    line_colors_dict=line_colors_dict, legend_dict=legend_dict,
-    member_font_size=18, title_font_size=25, 
-    border_color=(244, 255, 255), border_width=3, border_radius=7, text_color=flerzit.BLACK, 
-    screen_color=(224, 255, 255), title_font_color=flerzit.BLACK, member_color=flerzit.WHITE, member_origin=65,
-    member_space_between_columns=3, member_horizontal_margin=160, legend_color=flerzit.WHITE, legend_font_size=20, 
-    legend_vertical_padding=2.2, legend_horizontal_padding=2.1, legend_margin_left=130, legend_border_color=flerzit.BLACK, legend_border_width=3,
-    legend_border_radius=7
-)
+# Now we can display it to our screen using the display_web function.
+flerzit_sc.display_web("Family_Web.json", 660, 500)
 
 
 

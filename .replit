@@ -1,6 +1,6 @@
-run = ["python3", "main.py"]
+run = ["python3", "flerzit_sc.py"]
 language = "python3"
-entrypoint = "pyweb.py"
+entrypoint = "flerzit_sc.py"
 hidden = ["venv", ".config", "**/__pycache__", "**/.mypy_cache", "**/*.pyc"]
 
 audio = true
