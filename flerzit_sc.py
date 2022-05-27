@@ -1,4 +1,4 @@
-op"""
+"""
 A python scripting module of Flerzit.
 """
 import iostream
