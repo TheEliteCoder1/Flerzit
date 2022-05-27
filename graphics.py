@@ -3,21 +3,30 @@ pygame.init()
 pygame.font.init()
 
 FONTS = {
-    "default":"default_font.ttf",
-    "button":"opensans_extrabold.ttf",
-    "ui":"fira.ttf"
+    "default":"fonts/default_font.ttf",
+    "button":"fonts/opensans_extrabold.ttf",
+    "ui":"fonts/fira.ttf",
+    "minecraft":"fonts/minecraft.ttf"
 }
 
 def draw_text(screen: pygame.Surface, text: str,
     font_file: str,
-    font_size: int, color: tuple, pos: tuple, backg=None):
-    font = pygame.font.Font(pathlib.Path(font_file), font_size)
+    font_size: int, color: tuple, pos: tuple, backg=None, bold=False, italic=False, underline=False):
+    if '.ttf' in font_file:
+        font = pygame.font.Font(pathlib.Path(font_file), font_size)
+    else:
+        font = pygame.font.SysFont(font_file, font_size)
+    font.set_bold(bold)
+    font.set_italic(italic)
+    font.set_underline(underline)
     if backg == None:
         t = font.render(text, True, color)
     t = font.render(text, True, color, backg)
+    
     textRect = t.get_rect()
     textRect.center = pos
     screen.blit(t, textRect)
+
 
 def get_text_width(text: str, font_file: str, font_size: int) -> pygame.Rect:
     font = pygame.font.Font(pathlib.Path(font_file), font_size)
@@ -65,7 +74,8 @@ def get_darker_color(color: tuple, factor: int):
 
 class Button:
     """A clickable object that performs an operation when clicked."""
-    def __init__(self, x, y, width, height, color, text: typing.Optional[TextNode] = None, border_width=0, border_radius=0, border_color=(0,0,0)):
+    def __init__(self, screen, x, y, width, height, color, text: str, font_size: int, border_width=0, border_radius=0, border_color=(0,0,0)):
+        self.screen = screen
         self.x = x
         self.y = y
         self.width = width
@@ -74,13 +84,14 @@ class Button:
         self.color = color
         self.original_color = self.color
         self.darker_color = get_darker_color(self.color, 11)
-        self.text = text
+        self.text = TextNode(self.screen, FONTS["button"], text, font_size, (255,255,255), None)
         self.border_width = border_width
         self.border_radius = border_radius
         self.border_color = border_color
 
     def draw(self, screen):
         """Draws the button to the screen every frame."""
+        screen = self.screen
         if self.border_width > 0: # wether we can even see the border
             pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
             pygame.draw.rect(screen, self.border_color, self.rect, width=self.border_width, border_radius=self.border_radius)
@@ -91,8 +102,56 @@ class Button:
         if self.text != None:
             self.text.draw(pos=self.rect.center)
 
+    def clicked(self, mpos):
+        if self.rect.collidepoint(mpos):
+            return True
+        else:
+            return False
+
+class ToggleButton:
+    """A clickable object that turns on or off when clicked."""
+    def __init__(self, screen, x, y, width, height, on_color, off_color, border_width=0, border_radius=0, border_color=(0,0,0), font_size=20, help_text=None):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.on_color = on_color
+        self.off_color = off_color
+        self.is_on = False
+        self.text = TextNode(self.screen, FONTS["button"], "Off", font_size, (255,255,255), None)
+        self.border_width = border_width
+        self.border_radius = border_radius
+        self.border_color = border_color
+        self.help_text = help_text
+
+    def draw(self, screen):
+        """Draws the ToggleButton to the screen every frame."""
+        screen = self.screen
+        if self.is_on == False:
+            color = self.off_color
+            self.text.text = self.help_text + " Off" if self.help_text != None else "Off" # sets the text of the toggle button depending on the state of `is_on`.
+        elif self.is_on == True:
+            color = self.on_color
+            self.text.text = self.help_text + " On" if self.help_text != None else "On"
+
+        if self.border_width > 0: # wether we can even see the border
+            pygame.draw.rect(screen, color, self.rect, border_radius=self.border_radius)
+            pygame.draw.rect(screen, self.border_color, self.rect, width=self.border_width, border_radius=self.border_radius)
+            pygame.draw.rect(screen, (0,0,0), self.rect, width=1, border_radius=self.border_radius)
+        else:
+            pygame.draw.rect(self.screen, color, self.rect, border_radius=self.border_radius)
+
+        self.text.draw(pos=self.rect.center)
+
+    def toggle(self, mpos):
+        """Toggles the Button to be On or Off."""
+        if self.rect.collidepoint(mpos):
+            self.is_on = not self.is_on
+
 class DataBox:
-    def __init__(self, screen: pygame.Surface, horizontal_padding, vertical_padding, x, y, data: list, font_size: int, font_file: str, text_color: tuple, text_background=None):
+    def __init__(self, screen: pygame.Surface, horizontal_padding, vertical_padding, x, y, data: list, font_size: int, font_file: str, text_color: tuple, member_space_between_texts, text_background=None):
         self.screen = screen
         self.x = x
         self.y = y
@@ -104,10 +163,11 @@ class DataBox:
         self.text_color = text_color
         self.font_size = self.draw_scale
         self.text_background = text_background
+        self.member_space_between_texts = member_space_between_texts
         self.width = get_text_width(max(self.data), self.font_file, self.font_size)*self.horizontal_padding
         self.height = len(self.data)*self.draw_scale*self.vertical_padding
         self.box_rect = pygame.Rect(self.x, self.y-self.draw_scale, self.width, self.height)
-
+    
     def draw(self, color: tuple, border_radius=None, outline=False, outline_width=1,
             outline_color=(0,0,0)):
         if border_radius:
@@ -119,16 +179,19 @@ class DataBox:
             pygame.draw.rect(self.screen, color, self.box_rect) # draws only rectangle
             
         # Drawing Text Elements
+        self.text_rects = []
         for i, element in enumerate(self.data):
             text_x = self.box_rect.x + self.box_rect.width / 2
-            text_y = self.box_rect.y + self.draw_scale * (2*i) if i != 0 else self.box_rect.y + self.draw_scale + outline_width
+            text_y = self.box_rect.y + self.draw_scale * (self.member_space_between_texts*i) if i != 0 else self.box_rect.y + self.draw_scale + outline_width
             if i > 0:
                 text_y = text_y + self.draw_scale + outline_width
+            text_rect = get_text_rect(self.font_file, element, self.font_size, (text_x, text_y))
+            self.text_rects.append({"rect":text_rect, "text":element})
             draw_text(self.screen, element, self.font_file, self.font_size, self.text_color, (text_x, text_y), self.text_background)
-
+            
 
 class ColoredDataBox:
-    def __init__(self, screen: pygame.Surface, horizontal_padding, vertical_padding, x, y, data: list, font_size: int, font_file: str, text_colors: list, text_background=None):
+    def __init__(self, screen: pygame.Surface, horizontal_padding, vertical_padding, x, y, data: list, font_size: int, font_file: str, text_colors: list, legend_space_between_texts, text_background=None):
         self.screen = screen
         self.x = x
         self.y = y
@@ -140,6 +203,7 @@ class ColoredDataBox:
         self.text_colors = text_colors
         self.font_size = self.draw_scale
         self.text_background = text_background
+        self.legend_space_between_texts = legend_space_between_texts
         self.width = get_text_width(max(self.data), self.font_file, self.font_size)*self.horizontal_padding
         self.box_rect = pygame.Rect(self.x, self.y-self.draw_scale, self.width, len(self.data)*self.draw_scale*self.vertical_padding)
 
@@ -156,7 +220,7 @@ class ColoredDataBox:
         # Drawing Text Elements
         for i, element in enumerate(self.data):
             text_x = pygame.Rect(self.x, self.box_rect.y, self.box_rect.width, self.box_rect.height).x +  pygame.Rect(self.x, self.box_rect.y, self.box_rect.width, self.box_rect.height).width / 2
-            text_y = pygame.Rect(self.x, self.box_rect.y, self.box_rect.width, self.box_rect.height).y + self.draw_scale * (2*i) if i != 0 else self.box_rect.y + self.draw_scale + outline_width
+            text_y = pygame.Rect(self.x, self.box_rect.y, self.box_rect.width, self.box_rect.height).y + self.draw_scale * (self.legend_space_between_texts*i) if i != 0 else self.box_rect.y + self.draw_scale + outline_width
             if i > 0:
                 text_y = text_y + self.draw_scale + outline_width
             draw_text(self.screen, element, self.font_file, self.font_size, self.text_colors[i], (text_x, text_y), self.text_background)
@@ -196,8 +260,9 @@ class MenuBar:
         self.hover_color = hover_color
         self.menu_hover_color = menu_hover_color
         self.menu_space_factor = 10
+        self.clicked = False
 
-    def draw(self, bar_color=(131,139,139), text_style=TextStyle("fira.ttf", 20, (0,0,0), None), hide_options=False):
+    def draw(self, bar_color=(131,139,139), text_style=TextStyle("fonts/fira.ttf", 20, (0,0,0), None), hide_options=False):
         # drawing the body of the menu bar.
         self.bar_rect = pygame.Rect(self.x, self.y, self.bar_width, self.bar_height)
         pygame.draw.rect(self.screen, bar_color, self.bar_rect)
@@ -286,7 +351,6 @@ class MenuBar:
             for i in range(len(self.menu_titles)):
                 if self.menu_titles[i]["rect"].collidepoint(mpos):
                     self.options = {"options":self.menu_titles[i]["options"], "index":i}
-                
 
     def get_selected_option(self, mpos):
         """If any of the options of any of the menus in the menu bar were clicked, we will return the selected option."""

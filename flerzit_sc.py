@@ -1,4 +1,4 @@
-"""
+op"""
 A python scripting module of Flerzit.
 """
 import iostream
@@ -61,6 +61,7 @@ class Web:
         self.name = name
         self.data = []
         self.visualScript = {
+            "title":self.name,
             "line_colors_dict":line_colors_dict,
             "legend_dict":legend_dict,
             "text_color":(0,0,0),
@@ -80,11 +81,18 @@ class Web:
             "legend_border_color":(0,0,0),
             "members_per_row":3,
             "member_space_between_columns":2,
+            "legend_space_between_texts":1.1,
+            "member_space_between_texts":1.1,
             "member_color":(255,0,0),
             "title_font_size":20,
             "title_font_color":(0,0,0),
             "background_color":(255,255,255),
             "border":True,
+            "title_margin_top":60,
+            "title_horizontal_alignment":"Center",
+            "title_bold":False,
+            "title_italic":False,
+            "title_underline":False,
             "border_radius":5,
             "legend_color":(255,255,255),
             "legend_border_width":3,
@@ -93,6 +101,7 @@ class Web:
             "border_width":7,
             "border_color":(0,0,0),
             "line_width":2,
+            "legend_margin_top":60,
             "legend_margin_left":200
         }
         
@@ -137,7 +146,7 @@ class Web:
             }
             new_member_data.append(json_member)
         data = {
-            "name":self.name,
+            "name":self.visualScript["title"],
             "data":new_member_data,
             'VisualScript':self.visualScript
         }
@@ -148,7 +157,7 @@ class Web:
         new_data = []
         data = load_json_data(filepath)
         if data != None:
-            self.name = data["name"]
+            self.name = data["VisualScript"]["title"]
             for member in data["data"]:
                 m = Member()
                 m.relationships = member["relationships"]
@@ -180,10 +189,10 @@ def create_map_from_json(filepath) -> Web:
     else:
         return None
 
-def open(screen, file_path):
+def open(screen, file_path, starting_margin):
     "Displays a Web given a running Pygame window and a Web that was saved to a JSON file."
     web = create_map_from_json(file_path)
-    screen_title = "Flerzit - " + web.name
+    screen_title = "Flerzit - " + web.visualScript["title"]
     data_box_list = []
     texts = []
     for member in web.data:
@@ -194,7 +203,7 @@ def open(screen, file_path):
             texts.append(text_list)
     member_col, member_row = 0, 0
     for i, text in enumerate(texts):
-        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], web.visualScript["member_horizontal_margin"] * member_col + web.visualScript["member_horizontal_origin"], web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"])
+        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], web.visualScript["member_horizontal_margin"] * member_col + (starting_margin + web.visualScript["member_horizontal_origin"]), web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
         data_box_list.append(member_box)
         member_col += 1
         if member_col == web.visualScript["members_per_row"]:
@@ -218,7 +227,7 @@ def open(screen, file_path):
                 raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did  include {relationship_type}.")
         break
     
-    legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], screen.get_width()-web.visualScript["legend_margin_left"], web.visualScript["legend_margin_top"], legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend])
+    legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], screen.get_width()-web.visualScript["legend_margin_left"], web.visualScript["legend_margin_top"], legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend], web.visualScript["legend_space_between_texts"])
     member_idx = 0
     all_member_relationships = []
     for member in web.data:
@@ -232,19 +241,25 @@ def open(screen, file_path):
             else:
                 raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary did not include {relationship_type}.")        
 
-    return (screen, screen_title, web, all_member_relationships, data_box_list, legend_box)
+    return (screen, screen_title, web, all_member_relationships, data_box_list, legend_box, starting_margin)
     
 
-def draw_web(screen, screen_title, web, all_member_relationships, data_box_list, legend_box):
+def draw_web(screen, screen_title, web, all_member_relationships, data_box_list, legend_box, starting_margin):
     # filling background color
     screen.fill(web.visualScript["background_color"])
+    pygame.display.set_caption(screen_title)
 
     # calculate offset on resize
     legend_box.x = screen.get_width()-web.visualScript["legend_margin_left"]
     
     # drawing title
-    draw_text(screen, screen_title, web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (screen.get_width() / 2, 45))
-
+    options = ["Center", "Left", "Right"]
+    if options[web.visualScript["title_horizontal_alignment"]] == "Center":
+        draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (screen.get_width() / 2, web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
+    elif options[web.visualScript["title_horizontal_alignment"]] == "Left":
+        draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (web.visualScript["member_horizontal_margin"] + (starting_margin + web.visualScript["member_horizontal_origin"]), web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
+    elif options[web.visualScript["title_horizontal_alignment"]] == "Right":
+        draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], ((web.visualScript["member_horizontal_margin"] * web.visualScript["members_per_row"] + (starting_margin + web.visualScript["member_horizontal_origin"])/2), web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
     # drawing all relationships
     for relationship_line in all_member_relationships:
         pygame.draw.line(screen, relationship_line["color"], relationship_line["start"], relationship_line["end"], web.visualScript["line_width"])
@@ -269,7 +284,7 @@ def display_web(file_path, sw, sh):
     Note: the python window is new and is created on the function call.
     """
     web = create_map_from_json(file_path)
-    screen_title = "Flerzit - " + web.name
+    screen_title = "Flerzit - " + web.visualScript["title"]
     screen = pygame.display.set_mode((sw, sh))
     pygame.display.set_caption(screen_title)
     pygame.display.set_icon(pygame.image.load("flerzit-icon.png"))
@@ -285,7 +300,7 @@ def display_web(file_path, sw, sh):
             texts.append(text_list)
     member_col, member_row = 0, 0
     for i, text in enumerate(texts):
-        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], web.visualScript["member_horizontal_margin"] * member_col + web.visualScript["member_horizontal_origin"], web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"])
+        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], web.visualScript["member_horizontal_margin"] * member_col + web.visualScript["member_horizontal_origin"], web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
         data_box_list.append(member_box)
         member_col += 1
         if member_col == web.visualScript["members_per_row"]:
@@ -309,7 +324,7 @@ def display_web(file_path, sw, sh):
                 raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did  include {relationship_type}.")
         break
     
-    legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], sw-web.visualScript["legend_margin_left"], 50, legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend])
+    legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], sw-web.visualScript["legend_margin_left"], 50, legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend], web.visualScript["legend_space_between_texts"])
 
     member_idx = 0
     all_member_relationships = []
