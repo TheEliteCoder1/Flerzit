@@ -13,6 +13,7 @@ import pygame_menu
 from pygame_menu import locals
 from copyweb import CopyWebDialog
 from field_edit import FieldEditDialog
+import os
 
 sw, sh = 800, 500
 fileHandle = None
@@ -210,6 +211,7 @@ visualScriptMenu.add.color_input("legend_border_color: ", color_type=pygame_menu
 visualScriptMenu.add.text_input("legend_vertical_padding: ", input_type=pygame_menu.locals.INPUT_FLOAT, default=2.2, textinput_id="legend_vertical_padding")
 visualScriptMenu.add.text_input("legend_horizontal_padding: ", input_type=pygame_menu.locals.INPUT_FLOAT, default=2.1, textinput_id="legend_horizontal_padding")
 params = None
+inspectorMember = None
     
 while run:
     events = pygame.event.get()
@@ -356,11 +358,16 @@ while run:
                         if fileHandle != None:
                             inputDialog = CopyWebDialog(window)
                             window.wait_window(inputDialog.top)
-                            try:
-                                web.save(filepath=inputDialog.copy_filename, overwrite=True)
-                                tkinter.messagebox.showinfo("Web Saved.", message="Your changes were saved.")
-                            except Exception as E:
-                                tkinter.messagebox.showerror(title="An Error Occured.", message=f"An error occured when trying to save the file. - Details: {E}")
+                            if hasattr(inputDialog, "copy_filename"):
+                                fname, fext = os.path.splitext(inputDialog.copy_filename)
+                                if fext == '.json': # has to be a json file
+                                    try:
+                                        web.save(filepath=inputDialog.copy_filename, overwrite=True)
+                                        tkinter.messagebox.showinfo("Web Copied.", message=f"Your web was copied to '{inputDialog.copy_filename}'.")
+                                    except Exception as E:
+                                        tkinter.messagebox.showerror(title="An Error Occured.", message=f"An error occured when trying to save the file. - Details: {E}")
+                                else:
+                                    tkinter.messagebox.showerror(title="Copy Error.", message=f"Could not copy the file because it was not a json file. Hint: Add '.json' to the end of your file name.")
                         else:
                             tkinter.messagebox.showerror(title="No File Opened.", message="You must open a file first.")
                         window.destroy()
@@ -369,10 +376,12 @@ while run:
                 if fileHandle != None:
                     # checking if field values were clicked
                     for menu_box in params[4]:
-                        for text_rect in menu_box.text_rects:
-                            if text_rect["rect"].collidepoint(mpos):
-                                inspectorRect = text_rect["rect"]
-                                inspectorText = text_rect["text"]
+                        if hasattr(menu_box, "text_rects"): # checking if the text rects were drawn.
+                            for text_rect in menu_box.text_rects:
+                                if text_rect["rect"].collidepoint(mpos):
+                                    inspectorRect = text_rect["rect"]
+                                    inspectorText = text_rect["text"]
+                                    inspectorMember = menu_box
                     
 
             if not (menuBar.options != None):
@@ -385,11 +394,15 @@ while run:
                     if inspectorRect != None:
                         window = Tk()
                         window.withdraw()
-                        inputDialog = FieldEditDialog(window, "d", inspectorText)
+                        inputDialog = FieldEditDialog(window, inspectorText.partition(": ")[0])
                         window.wait_window(inputDialog.top)
-                        print(inputDialog.key, inputDialog.value)
+                        if hasattr(inputDialog, "value"):
+                            if len(inputDialog.value) > 0:
+                                params[4][params[4].index(inspectorMember)].data[params[4][params[4].index(inspectorMember)].data.index(inspectorText)] = f"{inputDialog.key}: {inputDialog.value}"     
+                                for member in params[2].data:
+                                    if params[2].data.index(member) == params[4].index(inspectorMember):
+                                        member.data[inputDialog.key] = inputDialog.value     
                         window.destroy()
-                        
                         
         
     screen.fill((255,255,255))

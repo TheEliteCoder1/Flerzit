@@ -192,7 +192,7 @@ def create_map_from_json(filepath) -> Web:
 def open(screen, file_path, starting_margin):
     "Displays a Web given a running Pygame window and a Web that was saved to a JSON file."
     web = create_map_from_json(file_path)
-    screen_title = "Flerzit - " + web.visualScript["title"]
+    screen_title = "Flerzit - " + file_path
     data_box_list = []
     texts = []
     for member in web.data:
