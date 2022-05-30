@@ -1,4 +1,5 @@
 import pygame, pathlib, typing
+from colorsys import rgb_to_hls, hls_to_rgb
 pygame.init()
 pygame.font.init()
 
@@ -67,10 +68,14 @@ class Label:
         """Draws Text To the Screen based on Attrs."""
         draw_text(self.screen, self.font_file, self.text, self.font_size, self.color, self.pos, self.background_color)
 
-def get_darker_color(color: tuple, factor: int):
-    """Returns the darker version of a given rgb factor"""
-    darker_color = (round(255 - (color[0] / factor)), round(255 - (color[1] / factor)), round(255 - (color[2] / factor)))
-    return darker_color
+def adjust_color_lightness(r, g, b, factor):
+    h, l, s = rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+    l = max(min(l * factor, 1.0), 0.0)
+    r, g, b = hls_to_rgb(h, l, s)
+    return int(r * 255), int(g * 255), int(b * 255)
+
+def darken_color(r, g, b, factor=0.1):
+    return adjust_color_lightness(r, g, b, 1 - factor)
 
 class Button:
     """A clickable object that performs an operation when clicked."""
@@ -83,11 +88,18 @@ class Button:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.color = color
         self.original_color = self.color
-        self.darker_color = get_darker_color(self.color, 11)
+        self.darker_color = darken_color(*self.color, 0.4)
         self.text = TextNode(self.screen, FONTS["button"], text, font_size, (255,255,255), None)
         self.border_width = border_width
         self.border_radius = border_radius
         self.border_color = border_color
+
+    def onhover(self, mpos):
+        """Does something when mouse is hovering over button."""
+        if self.rect.collidepoint(mpos):
+            self.color = self.darker_color
+        else:
+            self.color = self.original_color
 
     def draw(self, screen):
         """Draws the button to the screen every frame."""
@@ -309,18 +321,18 @@ class MenuBar:
                     option_x = self.menu_titles[self.options["index"]]["rect"].x
                     option_y = self.menu_titles[self.options["index"]]["rect"].y+self.bar_height
                     option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color)
-                    option_text_rect = pygame.Rect(option_x, option_y, get_text_width(max(options), text_style.font_file, text_style.font_size), self.menu_titles[self.options["index"]]["rect"].height)
+                    option_text_rect = pygame.Rect(option_x, option_y, get_text_width(max(options, key=len), text_style.font_file, text_style.font_size), self.menu_titles[self.options["index"]]["rect"].height)
                     first_x_y = (option_x, option_y)
                 elif i > 0:
                     option_x = first_x_y[0]
                     option_y = first_x_y[1]*(i+1)
                     option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color)
-                    option_text_rect = pygame.Rect(option_x, option_y, get_text_width(max(options), text_style.font_file, text_style.font_size), self.menu_titles[self.options["index"]]["rect"].height)
+                    option_text_rect = pygame.Rect(option_x, option_y, get_text_width(max(options, key=len), text_style.font_file, text_style.font_size), self.menu_titles[self.options["index"]]["rect"].height)
                 elif i == len(options):
                     option_x = first_x_y[0]
                     option_y = first_x_y[1]*(i)
                     option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color)
-                    option_text_rect = pygame.Rect(option_x, option_y, get_text_width(max(options), text_style.font_file, text_style.font_size), self.menu_titles[self.options["index"]]["rect"].height)
+                    option_text_rect = pygame.Rect(option_x, option_y, get_text_width(max(options, key=len), text_style.font_file, text_style.font_size), self.menu_titles[self.options["index"]]["rect"].height)
                 self.options_list.append({"pos":(option_x, option_y), "text":option_text, "rect":option_text_rect})
 
 

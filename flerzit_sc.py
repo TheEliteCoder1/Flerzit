@@ -203,13 +203,15 @@ def open(screen, file_path, starting_margin):
             texts.append(text_list)
     member_col, member_row = 0, 0
     for i, text in enumerate(texts):
-        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], web.visualScript["member_horizontal_margin"] * member_col + (starting_margin + web.visualScript["member_horizontal_origin"]), web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
+        m_width = get_text_width(max(text), web.visualScript["member_font"], web.visualScript["member_font_size"])*web.visualScript["member_horizontal_padding"]
+        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], (web.visualScript["member_horizontal_margin"] * member_col) + (starting_margin +  web.visualScript["member_horizontal_origin"]), web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
         data_box_list.append(member_box)
         member_col += 1
         if member_col == web.visualScript["members_per_row"]:
             member_row += web.visualScript["member_space_between_columns"]
             member_col = 0
-
+    for member_box in data_box_list:
+        member_box.x += (starting_margin)
     # legend
     legend = []
     legend_texts = []

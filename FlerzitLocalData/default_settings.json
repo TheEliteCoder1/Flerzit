@@ -1,0 +1,25 @@
+{
+    "recent": null,
+    "keyBinds": {
+        "Save": {
+            "Modifier": "CTRL",
+            "Key": "S"
+        },
+        "Recent": {
+            "Modifier": "SHIFT",
+            "Key": "R"
+        },
+        "Reload": {
+            "Modifier": "CTRL",
+            "Key": "R"
+        },
+        "Open": {
+            "Modifier": "CTRL",
+            "Key": "O"
+        },
+        "HideUI": {
+            "Modifier": "SHIFT",
+            "Key": "H"
+        }
+    }
+}
