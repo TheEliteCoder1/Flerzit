@@ -59,6 +59,7 @@ inspectorRect = None
 inspectorText = None
 hideUI = False
 
+
 def save_changes():
     # Collect Data from Editor, and save to file
     global web
@@ -263,6 +264,9 @@ while run:
                     #     tkinter.messagebox.showerror(title="Syntax Error.", message=f"An error occured when trying to open the file - Details: {E}.")
                     fileHandle = filename
                     web = params[2]
+                    all_member_relationships = params[3]
+                    data_box_list = params[4]
+                    legend_box = params[5]
                     visualScript = web.visualScript
                     # Setting visualScript Values
                     for relationship_type, color in visualScript["line_colors_dict"].items():
@@ -357,7 +361,68 @@ while run:
                     fileHandle = settings["recent"]
                     params = flerzit_sc.open(screen, fileHandle, starting_margin)
                     web = params[2]
+                    all_member_relationships = params[3]
+                    data_box_list = params[4]
+                    legend_box = params[5]
                     visualScript = web.visualScript
+                    # Setting visualScript Values
+                    for relationship_type, color in visualScript["line_colors_dict"].items():
+                        try:
+                            visualScriptMenu.add.color_input(f"Line Color - {relationship_type}: ", color_type=pygame_menu.widgets.COLORINPUT_TYPE_RGB, default=tuple(color), color_id=f'line_color_{relationship_type}')
+                        except IndexError:
+                            pass
+                        visualScriptMenu.get_widget(f"line_color_{relationship_type}").set_value(tuple(visualScript["line_colors_dict"][relationship_type]))
+                        
+                    for relationship_type, relation in visualScript["legend_dict"].items():
+                        try:
+                            visualScriptMenu.add.text_input(f"Relation - {relationship_type}: ", default=relation, max_char=20, textinput_id=f'legend_relation_{relationship_type}')
+                        except IndexError:
+                            pass
+                        visualScriptMenu.get_widget(f'legend_relation_{relationship_type}').set_value(visualScript["legend_dict"][relationship_type])
+                    visualScriptMenu.get_widget("title").set_value(visualScript["title"])
+                    visualScriptMenu.get_widget("member_space_between_texts").set_value(visualScript["member_space_between_texts"])
+                    visualScriptMenu.get_widget("legend_space_between_texts").set_value(visualScript["legend_space_between_texts"])
+                    visualScriptMenu.get_widget("text_color").set_value(tuple(visualScript["text_color"]))
+                    visualScriptMenu.get_widget("member_horizontal_origin").set_value(visualScript["member_horizontal_origin"])
+                    visualScriptMenu.get_widget("member_vertical_origin").set_value(visualScript["member_vertical_origin"])
+                    visualScriptMenu.get_widget("member_font").set_value(visualScript["member_font"])
+                    visualScriptMenu.get_widget("title_font").set_value(visualScript["title_font"])
+                    visualScriptMenu.get_widget("title_margin_top").set_value(visualScript["title_margin_top"])
+                    visualScriptMenu.get_widget("title_horizontal_alignment").set_value(visualScript["title_horizontal_alignment"])
+                    visualScriptMenu.get_widget("title_bold").set_value(visualScript["title_bold"])
+                    visualScriptMenu.get_widget("title_italic").set_value(visualScript["title_italic"])
+                    visualScriptMenu.get_widget("title_underline").set_value(visualScript["title_underline"])
+                    visualScriptMenu.get_widget("legend_font").set_value(visualScript["legend_font"])
+                    visualScriptMenu.get_widget("legend_font_size").set_value(visualScript["legend_font_size"])
+                    visualScriptMenu.get_widget("member_font_size").set_value(visualScript["member_font_size"])
+                    visualScriptMenu.get_widget("member_vertical_padding").set_value(visualScript["member_vertical_padding"])
+                    visualScriptMenu.get_widget("member_horizontal_padding").set_value(visualScript["member_horizontal_padding"])
+                    visualScriptMenu.get_widget("member_vertical_margin").set_value(visualScript["member_vertical_margin"])
+                    visualScriptMenu.get_widget("member_horizontal_margin").set_value(visualScript["member_horizontal_margin"])
+                    visualScriptMenu.get_widget("members_per_row").set_value(visualScript["members_per_row"])
+                    visualScriptMenu.get_widget("member_space_between_columns").set_value(visualScript["member_space_between_columns"])
+                    visualScriptMenu.get_widget("member_color").set_value(tuple(visualScript["member_color"]))
+                    visualScriptMenu.get_widget("title_font_size").set_value(visualScript["title_font_size"])
+                    visualScriptMenu.get_widget("title_font_color").set_value(tuple(visualScript["title_font_color"]))
+                    visualScriptMenu.get_widget("background_color").set_value(tuple(visualScript["background_color"]))
+                    visualScriptMenu.get_widget("border").set_value(int(visualScript["border"])) # convert to int
+                    visualScriptMenu.get_widget("border_radius").set_value(visualScript["border_radius"])
+                    visualScriptMenu.get_widget("legend_margin_top").set_value(visualScript["legend_margin_top"])
+                    visualScriptMenu.get_widget("legend_color").set_value(tuple(visualScript["legend_color"]))
+                    visualScriptMenu.get_widget("legend_border_width").set_value(visualScript["legend_border_width"])
+                    visualScriptMenu.get_widget("legend_border_radius").set_value(visualScript["legend_border_radius"])
+                    visualScriptMenu.get_widget("legend_margin_left").set_value(visualScript["legend_margin_left"])
+                    visualScriptMenu.get_widget("legend_border").set_value(int(visualScript["legend_border"])) # convert to int
+                    visualScriptMenu.get_widget("border_width").set_value(visualScript["border_width"])
+                    visualScriptMenu.get_widget("border_color").set_value(tuple(visualScript["border_color"]))
+                    visualScriptMenu.get_widget("line_width").set_value(visualScript["line_width"])
+                    visualScriptMenu.get_widget("legend_border_color").set_value(tuple(visualScript["legend_border_color"]))
+                    visualScriptMenu.get_widget("legend_vertical_padding").set_value(visualScript["legend_vertical_padding"])
+                    visualScriptMenu.get_widget("legend_horizontal_padding").set_value(visualScript["legend_horizontal_padding"])
+                    try:
+                        visualScriptMenu.add.button("Save", save_changes, button_id='Savebtn')
+                    except IndexError:
+                        pass
                 for object in other_objects:
                     if not object.rect.collidepoint(mpos):
                         menuBar.options = None
@@ -377,8 +442,69 @@ while run:
                             if fileHandle != None:
                                 params = flerzit_sc.open(screen, fileHandle, starting_margin)
                                 web = params[2]
+                                all_member_relationships = params[3]
+                                data_box_list = params[4]
+                                legend_box = params[5]
                                 visualScript = web.visualScript
-        
+                                # Setting visualScript Values
+                                for relationship_type, color in visualScript["line_colors_dict"].items():
+                                    try:
+                                        visualScriptMenu.add.color_input(f"Line Color - {relationship_type}: ", color_type=pygame_menu.widgets.COLORINPUT_TYPE_RGB, default=tuple(color), color_id=f'line_color_{relationship_type}')
+                                    except IndexError:
+                                        pass
+                                    visualScriptMenu.get_widget(f"line_color_{relationship_type}").set_value(tuple(visualScript["line_colors_dict"][relationship_type]))
+                                    
+                                for relationship_type, relation in visualScript["legend_dict"].items():
+                                    try:
+                                        visualScriptMenu.add.text_input(f"Relation - {relationship_type}: ", default=relation, max_char=20, textinput_id=f'legend_relation_{relationship_type}')
+                                    except IndexError:
+                                        pass
+                                    visualScriptMenu.get_widget(f'legend_relation_{relationship_type}').set_value(visualScript["legend_dict"][relationship_type])
+                                visualScriptMenu.get_widget("title").set_value(visualScript["title"])
+                                visualScriptMenu.get_widget("member_space_between_texts").set_value(visualScript["member_space_between_texts"])
+                                visualScriptMenu.get_widget("legend_space_between_texts").set_value(visualScript["legend_space_between_texts"])
+                                visualScriptMenu.get_widget("text_color").set_value(tuple(visualScript["text_color"]))
+                                visualScriptMenu.get_widget("member_horizontal_origin").set_value(visualScript["member_horizontal_origin"])
+                                visualScriptMenu.get_widget("member_vertical_origin").set_value(visualScript["member_vertical_origin"])
+                                visualScriptMenu.get_widget("member_font").set_value(visualScript["member_font"])
+                                visualScriptMenu.get_widget("title_font").set_value(visualScript["title_font"])
+                                visualScriptMenu.get_widget("title_margin_top").set_value(visualScript["title_margin_top"])
+                                visualScriptMenu.get_widget("title_horizontal_alignment").set_value(visualScript["title_horizontal_alignment"])
+                                visualScriptMenu.get_widget("title_bold").set_value(visualScript["title_bold"])
+                                visualScriptMenu.get_widget("title_italic").set_value(visualScript["title_italic"])
+                                visualScriptMenu.get_widget("title_underline").set_value(visualScript["title_underline"])
+                                visualScriptMenu.get_widget("legend_font").set_value(visualScript["legend_font"])
+                                visualScriptMenu.get_widget("legend_font_size").set_value(visualScript["legend_font_size"])
+                                visualScriptMenu.get_widget("member_font_size").set_value(visualScript["member_font_size"])
+                                visualScriptMenu.get_widget("member_vertical_padding").set_value(visualScript["member_vertical_padding"])
+                                visualScriptMenu.get_widget("member_horizontal_padding").set_value(visualScript["member_horizontal_padding"])
+                                visualScriptMenu.get_widget("member_vertical_margin").set_value(visualScript["member_vertical_margin"])
+                                visualScriptMenu.get_widget("member_horizontal_margin").set_value(visualScript["member_horizontal_margin"])
+                                visualScriptMenu.get_widget("members_per_row").set_value(visualScript["members_per_row"])
+                                visualScriptMenu.get_widget("member_space_between_columns").set_value(visualScript["member_space_between_columns"])
+                                visualScriptMenu.get_widget("member_color").set_value(tuple(visualScript["member_color"]))
+                                visualScriptMenu.get_widget("title_font_size").set_value(visualScript["title_font_size"])
+                                visualScriptMenu.get_widget("title_font_color").set_value(tuple(visualScript["title_font_color"]))
+                                visualScriptMenu.get_widget("background_color").set_value(tuple(visualScript["background_color"]))
+                                visualScriptMenu.get_widget("border").set_value(int(visualScript["border"])) # convert to int
+                                visualScriptMenu.get_widget("border_radius").set_value(visualScript["border_radius"])
+                                visualScriptMenu.get_widget("legend_margin_top").set_value(visualScript["legend_margin_top"])
+                                visualScriptMenu.get_widget("legend_color").set_value(tuple(visualScript["legend_color"]))
+                                visualScriptMenu.get_widget("legend_border_width").set_value(visualScript["legend_border_width"])
+                                visualScriptMenu.get_widget("legend_border_radius").set_value(visualScript["legend_border_radius"])
+                                visualScriptMenu.get_widget("legend_margin_left").set_value(visualScript["legend_margin_left"])
+                                visualScriptMenu.get_widget("legend_border").set_value(int(visualScript["legend_border"])) # convert to int
+                                visualScriptMenu.get_widget("border_width").set_value(visualScript["border_width"])
+                                visualScriptMenu.get_widget("border_color").set_value(tuple(visualScript["border_color"]))
+                                visualScriptMenu.get_widget("line_width").set_value(visualScript["line_width"])
+                                visualScriptMenu.get_widget("legend_border_color").set_value(tuple(visualScript["legend_border_color"]))
+                                visualScriptMenu.get_widget("legend_vertical_padding").set_value(visualScript["legend_vertical_padding"])
+                                visualScriptMenu.get_widget("legend_horizontal_padding").set_value(visualScript["legend_horizontal_padding"])
+                                try:
+                                    visualScriptMenu.add.button("Save", save_changes, button_id='Savebtn')
+                                except IndexError:
+                                    pass
+                    
                     if not (menuBar.options != None):
                         if copyButton.clicked(mpos):
                             window = Tk()
@@ -435,7 +561,68 @@ while run:
                         fileHandle = settings["recent"]
                         params = flerzit_sc.open(screen, fileHandle, starting_margin)
                         web = params[2]
+                        all_member_relationships = params[3]
+                        data_box_list = params[4]
+                        legend_box = params[5]
                         visualScript = web.visualScript
+                        # Setting visualScript Values
+                        for relationship_type, color in visualScript["line_colors_dict"].items():
+                            try:
+                                visualScriptMenu.add.color_input(f"Line Color - {relationship_type}: ", color_type=pygame_menu.widgets.COLORINPUT_TYPE_RGB, default=tuple(color), color_id=f'line_color_{relationship_type}')
+                            except IndexError:
+                                pass
+                            visualScriptMenu.get_widget(f"line_color_{relationship_type}").set_value(tuple(visualScript["line_colors_dict"][relationship_type]))
+                            
+                        for relationship_type, relation in visualScript["legend_dict"].items():
+                            try:
+                                visualScriptMenu.add.text_input(f"Relation - {relationship_type}: ", default=relation, max_char=20, textinput_id=f'legend_relation_{relationship_type}')
+                            except IndexError:
+                                pass
+                            visualScriptMenu.get_widget(f'legend_relation_{relationship_type}').set_value(visualScript["legend_dict"][relationship_type])
+                        visualScriptMenu.get_widget("title").set_value(visualScript["title"])
+                        visualScriptMenu.get_widget("member_space_between_texts").set_value(visualScript["member_space_between_texts"])
+                        visualScriptMenu.get_widget("legend_space_between_texts").set_value(visualScript["legend_space_between_texts"])
+                        visualScriptMenu.get_widget("text_color").set_value(tuple(visualScript["text_color"]))
+                        visualScriptMenu.get_widget("member_horizontal_origin").set_value(visualScript["member_horizontal_origin"])
+                        visualScriptMenu.get_widget("member_vertical_origin").set_value(visualScript["member_vertical_origin"])
+                        visualScriptMenu.get_widget("member_font").set_value(visualScript["member_font"])
+                        visualScriptMenu.get_widget("title_font").set_value(visualScript["title_font"])
+                        visualScriptMenu.get_widget("title_margin_top").set_value(visualScript["title_margin_top"])
+                        visualScriptMenu.get_widget("title_horizontal_alignment").set_value(visualScript["title_horizontal_alignment"])
+                        visualScriptMenu.get_widget("title_bold").set_value(visualScript["title_bold"])
+                        visualScriptMenu.get_widget("title_italic").set_value(visualScript["title_italic"])
+                        visualScriptMenu.get_widget("title_underline").set_value(visualScript["title_underline"])
+                        visualScriptMenu.get_widget("legend_font").set_value(visualScript["legend_font"])
+                        visualScriptMenu.get_widget("legend_font_size").set_value(visualScript["legend_font_size"])
+                        visualScriptMenu.get_widget("member_font_size").set_value(visualScript["member_font_size"])
+                        visualScriptMenu.get_widget("member_vertical_padding").set_value(visualScript["member_vertical_padding"])
+                        visualScriptMenu.get_widget("member_horizontal_padding").set_value(visualScript["member_horizontal_padding"])
+                        visualScriptMenu.get_widget("member_vertical_margin").set_value(visualScript["member_vertical_margin"])
+                        visualScriptMenu.get_widget("member_horizontal_margin").set_value(visualScript["member_horizontal_margin"])
+                        visualScriptMenu.get_widget("members_per_row").set_value(visualScript["members_per_row"])
+                        visualScriptMenu.get_widget("member_space_between_columns").set_value(visualScript["member_space_between_columns"])
+                        visualScriptMenu.get_widget("member_color").set_value(tuple(visualScript["member_color"]))
+                        visualScriptMenu.get_widget("title_font_size").set_value(visualScript["title_font_size"])
+                        visualScriptMenu.get_widget("title_font_color").set_value(tuple(visualScript["title_font_color"]))
+                        visualScriptMenu.get_widget("background_color").set_value(tuple(visualScript["background_color"]))
+                        visualScriptMenu.get_widget("border").set_value(int(visualScript["border"])) # convert to int
+                        visualScriptMenu.get_widget("border_radius").set_value(visualScript["border_radius"])
+                        visualScriptMenu.get_widget("legend_margin_top").set_value(visualScript["legend_margin_top"])
+                        visualScriptMenu.get_widget("legend_color").set_value(tuple(visualScript["legend_color"]))
+                        visualScriptMenu.get_widget("legend_border_width").set_value(visualScript["legend_border_width"])
+                        visualScriptMenu.get_widget("legend_border_radius").set_value(visualScript["legend_border_radius"])
+                        visualScriptMenu.get_widget("legend_margin_left").set_value(visualScript["legend_margin_left"])
+                        visualScriptMenu.get_widget("legend_border").set_value(int(visualScript["legend_border"])) # convert to int
+                        visualScriptMenu.get_widget("border_width").set_value(visualScript["border_width"])
+                        visualScriptMenu.get_widget("border_color").set_value(tuple(visualScript["border_color"]))
+                        visualScriptMenu.get_widget("line_width").set_value(visualScript["line_width"])
+                        visualScriptMenu.get_widget("legend_border_color").set_value(tuple(visualScript["legend_border_color"]))
+                        visualScriptMenu.get_widget("legend_vertical_padding").set_value(visualScript["legend_vertical_padding"])
+                        visualScriptMenu.get_widget("legend_horizontal_padding").set_value(visualScript["legend_horizontal_padding"])
+                        try:
+                            visualScriptMenu.add.button("Save", save_changes, button_id='Savebtn')
+                        except IndexError:
+                            pass
                     for object in other_objects:
                         if not object.rect.collidepoint(mpos):
                             menuBar.options = None
@@ -446,7 +633,68 @@ while run:
                     if fileHandle != None:
                         params = flerzit_sc.open(screen, fileHandle, starting_margin)
                         web = params[2]
+                        all_member_relationships = params[3]
+                        data_box_list = params[4]
+                        legend_box = params[5]
                         visualScript = web.visualScript
+                        # Setting visualScript Values
+                        for relationship_type, color in visualScript["line_colors_dict"].items():
+                            try:
+                                visualScriptMenu.add.color_input(f"Line Color - {relationship_type}: ", color_type=pygame_menu.widgets.COLORINPUT_TYPE_RGB, default=tuple(color), color_id=f'line_color_{relationship_type}')
+                            except IndexError:
+                                pass
+                            visualScriptMenu.get_widget(f"line_color_{relationship_type}").set_value(tuple(visualScript["line_colors_dict"][relationship_type]))
+                            
+                        for relationship_type, relation in visualScript["legend_dict"].items():
+                            try:
+                                visualScriptMenu.add.text_input(f"Relation - {relationship_type}: ", default=relation, max_char=20, textinput_id=f'legend_relation_{relationship_type}')
+                            except IndexError:
+                                pass
+                            visualScriptMenu.get_widget(f'legend_relation_{relationship_type}').set_value(visualScript["legend_dict"][relationship_type])
+                        visualScriptMenu.get_widget("title").set_value(visualScript["title"])
+                        visualScriptMenu.get_widget("member_space_between_texts").set_value(visualScript["member_space_between_texts"])
+                        visualScriptMenu.get_widget("legend_space_between_texts").set_value(visualScript["legend_space_between_texts"])
+                        visualScriptMenu.get_widget("text_color").set_value(tuple(visualScript["text_color"]))
+                        visualScriptMenu.get_widget("member_horizontal_origin").set_value(visualScript["member_horizontal_origin"])
+                        visualScriptMenu.get_widget("member_vertical_origin").set_value(visualScript["member_vertical_origin"])
+                        visualScriptMenu.get_widget("member_font").set_value(visualScript["member_font"])
+                        visualScriptMenu.get_widget("title_font").set_value(visualScript["title_font"])
+                        visualScriptMenu.get_widget("title_margin_top").set_value(visualScript["title_margin_top"])
+                        visualScriptMenu.get_widget("title_horizontal_alignment").set_value(visualScript["title_horizontal_alignment"])
+                        visualScriptMenu.get_widget("title_bold").set_value(visualScript["title_bold"])
+                        visualScriptMenu.get_widget("title_italic").set_value(visualScript["title_italic"])
+                        visualScriptMenu.get_widget("title_underline").set_value(visualScript["title_underline"])
+                        visualScriptMenu.get_widget("legend_font").set_value(visualScript["legend_font"])
+                        visualScriptMenu.get_widget("legend_font_size").set_value(visualScript["legend_font_size"])
+                        visualScriptMenu.get_widget("member_font_size").set_value(visualScript["member_font_size"])
+                        visualScriptMenu.get_widget("member_vertical_padding").set_value(visualScript["member_vertical_padding"])
+                        visualScriptMenu.get_widget("member_horizontal_padding").set_value(visualScript["member_horizontal_padding"])
+                        visualScriptMenu.get_widget("member_vertical_margin").set_value(visualScript["member_vertical_margin"])
+                        visualScriptMenu.get_widget("member_horizontal_margin").set_value(visualScript["member_horizontal_margin"])
+                        visualScriptMenu.get_widget("members_per_row").set_value(visualScript["members_per_row"])
+                        visualScriptMenu.get_widget("member_space_between_columns").set_value(visualScript["member_space_between_columns"])
+                        visualScriptMenu.get_widget("member_color").set_value(tuple(visualScript["member_color"]))
+                        visualScriptMenu.get_widget("title_font_size").set_value(visualScript["title_font_size"])
+                        visualScriptMenu.get_widget("title_font_color").set_value(tuple(visualScript["title_font_color"]))
+                        visualScriptMenu.get_widget("background_color").set_value(tuple(visualScript["background_color"]))
+                        visualScriptMenu.get_widget("border").set_value(int(visualScript["border"])) # convert to int
+                        visualScriptMenu.get_widget("border_radius").set_value(visualScript["border_radius"])
+                        visualScriptMenu.get_widget("legend_margin_top").set_value(visualScript["legend_margin_top"])
+                        visualScriptMenu.get_widget("legend_color").set_value(tuple(visualScript["legend_color"]))
+                        visualScriptMenu.get_widget("legend_border_width").set_value(visualScript["legend_border_width"])
+                        visualScriptMenu.get_widget("legend_border_radius").set_value(visualScript["legend_border_radius"])
+                        visualScriptMenu.get_widget("legend_margin_left").set_value(visualScript["legend_margin_left"])
+                        visualScriptMenu.get_widget("legend_border").set_value(int(visualScript["legend_border"])) # convert to int
+                        visualScriptMenu.get_widget("border_width").set_value(visualScript["border_width"])
+                        visualScriptMenu.get_widget("border_color").set_value(tuple(visualScript["border_color"]))
+                        visualScriptMenu.get_widget("line_width").set_value(visualScript["line_width"])
+                        visualScriptMenu.get_widget("legend_border_color").set_value(tuple(visualScript["legend_border_color"]))
+                        visualScriptMenu.get_widget("legend_vertical_padding").set_value(visualScript["legend_vertical_padding"])
+                        visualScriptMenu.get_widget("legend_horizontal_padding").set_value(visualScript["legend_horizontal_padding"])
+                        try:
+                            visualScriptMenu.add.button("Save", save_changes, button_id='Savebtn')
+                        except IndexError:
+                            pass
                 if event.key == eval(key) and pygame.key.get_mods() & eval(modifier) and keyBind == 'Open':
                     window = Tk()
                     window.withdraw()
@@ -459,6 +707,9 @@ while run:
                         #     tkinter.messagebox.showerror(title="Syntax Error.", message=f"An error occured when trying to open the file - Details: {E}.")
                         fileHandle = filename
                         web = params[2]
+                        all_member_relationships = params[3]
+                        data_box_list = params[4]
+                        legend_box = params[5]
                         visualScript = web.visualScript
                         # Setting visualScript Values
                         for relationship_type, color in visualScript["line_colors_dict"].items():
@@ -534,7 +785,10 @@ while run:
                         window.wait_window(inputDialog.top)
                         if hasattr(inputDialog, "value"):
                             if len(inputDialog.value) > 0:
-                                params[4][params[4].index(inspectorMember)].data[params[4][params[4].index(inspectorMember)].data.index(inspectorText)] = f"{inputDialog.key}: {inputDialog.value}"     
+                                try:
+                                    params[4][params[4].index(inspectorMember)].data[params[4][params[4].index(inspectorMember)].data.index(inspectorText)] = f"{inputDialog.key}: {inputDialog.value}"
+                                except ValueError:
+                                    pass
                                 for member in params[2].data:
                                     try:
                                         if params[2].data.index(member) == params[4].index(inspectorMember):
@@ -566,12 +820,14 @@ while run:
 
     screen.fill((155,155,155))
     if params != None:
-        flerzit_sc.draw_web(*params)
+        flerzit_sc.draw_web(params[0], params[1], web, all_member_relationships, data_box_list, legend_box, starting_margin)
     else:
         banner = pygame.transform.scale(pygame.image.load("flerzit-icon.png"), (300, 300))
         screen.blit(banner, (sw/2 - (banner.get_rect().width/2), 25))
         logo = pygame.image.load("flerzit-logo.png")
         screen.blit(logo, (sw/2 - (logo.get_rect().width/2), 315))
+    
+    
     if hideUI == False:
         for button in buttons:
             button.draw(screen)

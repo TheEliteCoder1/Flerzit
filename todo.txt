@@ -7,3 +7,4 @@ Feature: Remove an existing Member from a Web
 Feature: Create new Web
 Feature: Add Image/Decor Assets to a Web
 Feature: Export image as PNG
+Feature: Allow scrollable area

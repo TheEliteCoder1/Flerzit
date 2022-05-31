@@ -8,7 +8,7 @@
                 "2": 2
             },
             "data": {
-                "Name": "tsconfig",
+                "Name": "bob",
                 "Age": "s"
             }
         },
@@ -20,7 +20,7 @@
             },
             "data": {
                 "Name": "Noob",
-                "Age": "sssss"
+                "Age": "blah"
             }
         },
         {
@@ -31,7 +31,7 @@
             },
             "data": {
                 "Name": "Linda",
-                "Age": 78
+                "Age": "mmmmmmmmmm"
             }
         },
         {
@@ -86,14 +86,14 @@
                 255
             ],
             "1": [
+                0,
                 255,
-                255,
-                255
+                0
             ],
             "2": [
                 255,
                 255,
-                255
+                0
             ]
         },
         "legend_dict": {

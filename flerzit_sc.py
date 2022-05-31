@@ -234,7 +234,7 @@ def open(screen, file_path, starting_margin):
     all_member_relationships = []
     for member in web.data:
         for relationship_type, relationship in member.relationships.items():
-            line_start = (data_box_list[member_idx].box_rect.midleft[0], data_box_list[member_idx].box_rect.midleft[1]-5)
+            line_start = (data_box_list[web.data.index(member)].box_rect.midleft[0], data_box_list[web.data.index(member)].box_rect.midleft[1]-5)
             line_end = (data_box_list[relationship].box_rect.midleft[0], data_box_list[relationship].box_rect.midleft[1]-5)
             if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
                 color = web.visualScript["line_colors_dict"][str(relationship_type)]
@@ -278,103 +278,3 @@ def draw_web(screen, screen_title, web, all_member_relationships, data_box_list,
         legend_box.draw(web.visualScript["legend_color"], web.visualScript["legend_border_radius"], True, web.visualScript["legend_border_width"], web.visualScript["legend_border_color"])
     else:
         legend_box.draw(web.visualScript["legend_color"], outline=False)
-
-
-def display_web(file_path, sw, sh):
-    """
-    Displays a Web in a Python Window given a Web that was saved to a JSON file.
-    Note: the python window is new and is created on the function call.
-    """
-    web = create_map_from_json(file_path)
-    screen_title = "Flerzit - " + web.visualScript["title"]
-    screen = pygame.display.set_mode((sw, sh))
-    pygame.display.set_caption(screen_title)
-    pygame.display.set_icon(pygame.image.load("flerzit-icon.png"))
-    clock = pygame.time.Clock()
-    fps = 60
-    data_box_list = []
-    texts = []
-    for member in web.data:
-        text_list = []
-        if member != 'VisualScript':
-            for key, value in member.data.items():
-                text_list.append(f"{key}: {value}")
-            texts.append(text_list)
-    member_col, member_row = 0, 0
-    for i, text in enumerate(texts):
-        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], web.visualScript["member_horizontal_margin"] * member_col + web.visualScript["member_horizontal_origin"], web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
-        data_box_list.append(member_box)
-        member_col += 1
-        if member_col == web.visualScript["members_per_row"]:
-            member_row += web.visualScript["member_space_between_columns"]
-            member_col = 0
-
-    # legend
-    legend = []
-    legend_texts = []
-    for member in web.data:
-        for relationship_type, relationship in member.relationships.items():
-            if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
-                color = web.visualScript["line_colors_dict"][str(relationship_type)]
-                if int(relationship_type) in [int(k) for k in web.visualScript["legend_dict"].keys()]:
-                    text = web.visualScript["legend_dict"][str(relationship_type)]
-                    legend.append({"color":color, "text":text})
-                    legend_texts.append(text)
-                else:
-                    raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did include {relationship_type}.")
-            else:
-                raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did  include {relationship_type}.")
-        break
-    
-    legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], sw-web.visualScript["legend_margin_left"], 50, legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend], web.visualScript["legend_space_between_texts"])
-
-    member_idx = 0
-    all_member_relationships = []
-    for member in web.data:
-        for relationship_type, relationship in member.relationships.items():
-            line_start = (data_box_list[member_idx].box_rect.midleft[0], data_box_list[member_idx].box_rect.midleft[1]-5)
-            line_end = (data_box_list[relationship].box_rect.midleft[0], data_box_list[relationship].box_rect.midleft[1]-5)
-            if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
-                color = web.visualScript["line_colors_dict"][str(relationship_type)]
-                line = {"start":line_start, "end":line_end, "color":color}
-                all_member_relationships.append(line)
-            else:
-                raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary did not include {relationship_type}.")        
-    run = True
-    while run:
-        clock.tick(fps)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-
-                
-        # coloring screen
-        screen.fill(web.visualScript["background_color"])
-        # drawing title
-        draw_text(screen, screen_title, web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (screen.get_width() / 2, 35))
-    
-        # drawing all relationships
-        for relationship_line in all_member_relationships:
-            pygame.draw.line(screen, relationship_line["color"], relationship_line["start"], relationship_line["end"], web.visualScript["line_width"])
-
-        # drawing all members
-        for member_box in data_box_list:
-            if web.visualScript["border"] != False:
-                member_box.draw(web.visualScript["member_color"], web.visualScript["border_radius"], True, web.visualScript["border_width"], web.visualScript["border_color"])
-            else:
-                member_box.draw(web.visualScript["member_color"], outline=False)
-
-        # drawing legend
-        if web.visualScript["legend_border"] != False:
-            legend_box.draw(web.visualScript["legend_color"], web.visualScript["legend_border_radius"], True, web.visualScript["legend_border_width"], web.visualScript["legend_border_color"])
-        else:
-            legend_box.draw(web.visualScript["legend_color"], outline=False)
-
-        # update the screen every frame
-        pygame.display.update()
-
-
-
-                
-            
