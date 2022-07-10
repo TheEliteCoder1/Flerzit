@@ -195,86 +195,93 @@ def open(screen, file_path, starting_margin):
     screen_title = "Flerzit - " + file_path
     data_box_list = []
     texts = []
-    for member in web.data:
-        text_list = []
-        if member != 'VisualScript':
-            for key, value in member.data.items():
-                text_list.append(f"{key}: {value}")
-            texts.append(text_list)
-    member_col, member_row = 0, 0
-    for i, text in enumerate(texts):
-        m_width = get_text_width(max(text), web.visualScript["member_font"], web.visualScript["member_font_size"])*web.visualScript["member_horizontal_padding"]
-        member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], (web.visualScript["member_horizontal_margin"] * member_col) + (starting_margin +  web.visualScript["member_horizontal_origin"]), web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
-        data_box_list.append(member_box)
-        member_col += 1
-        if member_col == web.visualScript["members_per_row"]:
-            member_row += web.visualScript["member_space_between_columns"]
-            member_col = 0
-    for member_box in data_box_list:
-        member_box.x += (starting_margin)
+    if web != None:
+        for member in web.data:
+            text_list = []
+            if member != 'VisualScript':
+                for key, value in member.data.items():
+                    text_list.append(f"{key}: {value}")
+                texts.append(text_list)
+        member_col, member_row = 0, 0
+        for i, text in enumerate(texts):
+            m_width = get_text_width(max(text), web.visualScript["member_font"], web.visualScript["member_font_size"])*web.visualScript["member_horizontal_padding"]
+            member_box = DataBox(screen, web.visualScript["member_horizontal_padding"], web.visualScript["member_vertical_padding"], (web.visualScript["member_horizontal_margin"] * member_col) + (starting_margin +  web.visualScript["member_horizontal_origin"]), web.visualScript["member_vertical_margin"] * member_row + web.visualScript["member_vertical_origin"], text, web.visualScript["member_font_size"], web.visualScript["member_font"], web.visualScript["text_color"], web.visualScript["member_space_between_texts"])
+            data_box_list.append(member_box)
+            member_col += 1
+            if member_col == web.visualScript["members_per_row"]:
+                member_row += web.visualScript["member_space_between_columns"]
+                member_col = 0
+        for member_box in data_box_list:
+            member_box.x += (starting_margin)
     # legend
     legend = []
     legend_texts = []
-    for member in web.data:
-        for relationship_type, relationship in member.relationships.items():
-            if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
-                color = web.visualScript["line_colors_dict"][str(relationship_type)]
-                if int(relationship_type) in [int(k) for k in web.visualScript["legend_dict"].keys()]:
-                    text = web.visualScript["legend_dict"][str(relationship_type)]
-                    legend.append({"color":color, "text":text})
-                    legend_texts.append(text)
+    if web != None:
+        for member in web.data:
+            for relationship_type, relationship in member.relationships.items():
+                if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
+                    color = web.visualScript["line_colors_dict"][str(relationship_type)]
+                    if int(relationship_type) in [int(k) for k in web.visualScript["legend_dict"].keys()]:
+                        text = web.visualScript["legend_dict"][str(relationship_type)]
+                        legend.append({"color":color, "text":text})
+                        legend_texts.append(text)
+                    else:
+                        raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did include {relationship_type}.")
                 else:
-                    raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did include {relationship_type}.")
-            else:
-                raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did  include {relationship_type}.")
-        break
-    
-    legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], screen.get_width()-web.visualScript["legend_margin_left"], web.visualScript["legend_margin_top"], legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend], web.visualScript["legend_space_between_texts"])
+                    raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary or yout legend dictionary or neither did  include {relationship_type}.")
+            break
+    if web != None:
+        legend_box = ColoredDataBox(screen, web.visualScript["legend_horizontal_padding"], web.visualScript["legend_vertical_padding"], screen.get_width()-web.visualScript["legend_margin_left"], web.visualScript["legend_margin_top"], legend_texts, web.visualScript["legend_font_size"], web.visualScript["legend_font"], [l["color"] for l in legend], web.visualScript["legend_space_between_texts"])
+    else:
+        legend_box = None
     member_idx = 0
     all_member_relationships = []
-    for member in web.data:
-        for relationship_type, relationship in member.relationships.items():
-            line_start = (data_box_list[web.data.index(member)].box_rect.midleft[0], data_box_list[web.data.index(member)].box_rect.midleft[1]-5)
-            line_end = (data_box_list[relationship].box_rect.midleft[0], data_box_list[relationship].box_rect.midleft[1]-5)
-            if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
-                color = web.visualScript["line_colors_dict"][str(relationship_type)]
-                line = {"start":line_start, "end":line_end, "color":color}
-                all_member_relationships.append(line)
-            else:
-                raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary did not include {relationship_type}.")        
+    if web != None:
+        for member in web.data:
+            for relationship_type, relationship in member.relationships.items():
+                line_start = (data_box_list[web.data.index(member)].box_rect.midleft[0], data_box_list[web.data.index(member)].box_rect.midleft[1]-5)
+                line_end = (data_box_list[relationship].box_rect.midleft[0], data_box_list[relationship].box_rect.midleft[1]-5)
+                if int(relationship_type) in [int(k) for k in web.visualScript["line_colors_dict"].keys()]:
+                    color = web.visualScript["line_colors_dict"][str(relationship_type)]
+                    line = {"start":line_start, "end":line_end, "color":color}
+                    all_member_relationships.append(line)
+                else:
+                    raise Exception(f"No Members have a relationship type of {relationship_type} or your color dictionary did not include {relationship_type}.")        
 
     return (screen, screen_title, web, all_member_relationships, data_box_list, legend_box, starting_margin)
     
 
 def draw_web(screen, screen_title, web, all_member_relationships, data_box_list, legend_box, starting_margin):
     # filling background color
-    screen.fill(web.visualScript["background_color"])
+    if web != None:
+        screen.fill(web.visualScript["background_color"])
     pygame.display.set_caption(screen_title)
 
-    # calculate offset on resize
-    legend_box.x = screen.get_width()-web.visualScript["legend_margin_left"]
-    
-    # drawing title
-    options = ["Center", "Left", "Right"]
-    if options[web.visualScript["title_horizontal_alignment"]] == "Center":
-        draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (screen.get_width() / 2, web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
-    elif options[web.visualScript["title_horizontal_alignment"]] == "Left":
-        draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (web.visualScript["member_horizontal_margin"] + (starting_margin + web.visualScript["member_horizontal_origin"]), web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
-    elif options[web.visualScript["title_horizontal_alignment"]] == "Right":
-        draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], ((web.visualScript["member_horizontal_margin"] * web.visualScript["members_per_row"] + (starting_margin + web.visualScript["member_horizontal_origin"])/2), web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
-    # drawing all relationships
-    for relationship_line in all_member_relationships:
-        pygame.draw.line(screen, relationship_line["color"], relationship_line["start"], relationship_line["end"], web.visualScript["line_width"])
+    if web != None:
+        # calculate offset on resize
+        legend_box.x = screen.get_width()-web.visualScript["legend_margin_left"]
+        
+        # drawing title
+        options = ["Center", "Left", "Right"]
+        if options[web.visualScript["title_horizontal_alignment"]] == "Center":
+            draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (screen.get_width() / 2, web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
+        elif options[web.visualScript["title_horizontal_alignment"]] == "Left":
+            draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], (web.visualScript["member_horizontal_margin"] + (starting_margin + web.visualScript["member_horizontal_origin"]), web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
+        elif options[web.visualScript["title_horizontal_alignment"]] == "Right":
+            draw_text(screen, web.visualScript["title"], web.visualScript["title_font"], web.visualScript["title_font_size"], web.visualScript["title_font_color"], ((web.visualScript["member_horizontal_margin"] * web.visualScript["members_per_row"] + (starting_margin + web.visualScript["member_horizontal_origin"])/2), web.visualScript["title_margin_top"]), bold=web.visualScript["title_bold"], italic=web.visualScript["title_italic"], underline=web.visualScript["title_underline"])
+        # drawing all relationships
+        for relationship_line in all_member_relationships:
+            pygame.draw.line(screen, relationship_line["color"], relationship_line["start"], relationship_line["end"], web.visualScript["line_width"])
 
-    # drawing all members
-    for member_box in data_box_list:
-        if web.visualScript["border"] != False:
-            member_box.draw(web.visualScript["member_color"], web.visualScript["border_radius"], True, web.visualScript["border_width"], web.visualScript["border_color"])
+        # drawing all members
+        for member_box in data_box_list:
+            if web.visualScript["border"] != False:
+                member_box.draw(web.visualScript["member_color"], web.visualScript["border_radius"], True, web.visualScript["border_width"], web.visualScript["border_color"])
+            else:
+                member_box.draw(web.visualScript["member_color"], outline=False)
+
+        # drawing legend
+        if web.visualScript["legend_border"] != False:
+            legend_box.draw(web.visualScript["legend_color"], web.visualScript["legend_border_radius"], True, web.visualScript["legend_border_width"], web.visualScript["legend_border_color"])
         else:
-            member_box.draw(web.visualScript["member_color"], outline=False)
-
-    # drawing legend
-    if web.visualScript["legend_border"] != False:
-        legend_box.draw(web.visualScript["legend_color"], web.visualScript["legend_border_radius"], True, web.visualScript["legend_border_width"], web.visualScript["legend_border_color"])
-    else:
-        legend_box.draw(web.visualScript["legend_color"], outline=False)
+            legend_box.draw(web.visualScript["legend_color"], outline=False)

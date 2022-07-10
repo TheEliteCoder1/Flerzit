@@ -19,8 +19,8 @@
                 "2": 2
             },
             "data": {
-                "Name": "Noob",
-                "Age": "blah"
+                "Name": "Sarah",
+                "Age": "65"
             }
         },
         {
@@ -52,7 +52,7 @@
             },
             "data": {
                 "Name": "Jelly",
-                "Age": 42
+                "Age": "43"
             }
         },
         {
@@ -61,7 +61,7 @@
                 "0": 4
             },
             "data": {
-                "Name": "Jefferson",
+                "Name": "caby",
                 "Age": 39
             }
         },
@@ -132,8 +132,8 @@
         ],
         "title_margin_top": 65,
         "title_horizontal_alignment": 1,
-        "title_bold": 0,
-        "title_italic": 0,
+        "title_bold": 1,
+        "title_italic": 1,
         "title_underline": 0,
         "background_color": [
             126,
@@ -151,13 +151,13 @@
         "legend_border_width": 3,
         "legend_border_radius": 12,
         "legend_border": 1,
-        "border_width": 3,
+        "border_width": 9,
         "border_color": [
             74,
             111,
             40
         ],
-        "line_width": 12,
+        "line_width": 20,
         "legend_margin_left": 230,
         "legend_border_color": [
             74,

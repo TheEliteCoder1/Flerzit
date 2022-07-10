@@ -3,6 +3,7 @@ Feature: Add New Field to Specific Member
 Feature: Remove a Field from a Specific Member
 Feature: Create a New Member for a Web
 Feature: Add A New Relationship between Two Members in a Web
+Feature: Remove a Relationship between Two Members in a Web
 Feature: Remove an existing Member from a Web
 Feature: Create new Web
 Feature: Add Image/Decor Assets to a Web
